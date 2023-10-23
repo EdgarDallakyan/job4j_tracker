@@ -30,5 +30,6 @@ public class BatteryTest {
         charger.exchange(another);
         int expected = 95;
         assertThat(another.about()).isEqualTo("My charge: " + expected + "%");
+
     }
 }
