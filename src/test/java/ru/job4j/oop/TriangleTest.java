@@ -18,6 +18,7 @@ public class TriangleTest {
 
     @Test
     public void when92and62and72Thenminus1() {
+
         Point a = new Point(9, 2);
         Point b = new Point(6, 2);
         Point c = new Point(7, 2);
