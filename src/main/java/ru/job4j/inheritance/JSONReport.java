@@ -8,4 +8,5 @@ public class JSONReport extends TextReport {
                 + "\t\"body\" : " + "\"" + body + "\"" + System.lineSeparator()
                 + "}";
     }
+
 }
