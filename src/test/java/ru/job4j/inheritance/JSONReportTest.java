@@ -30,5 +30,4 @@ public class JSONReportTest {
         String result = new JSONReport().generate(name, body);
         assertThat(result).isEqualTo(expected);
     }
-
 }
