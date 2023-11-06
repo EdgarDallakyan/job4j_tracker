@@ -8,6 +8,7 @@ public class Shop {
                 return i;
             }
         }
+
         return -1;
     }
 
