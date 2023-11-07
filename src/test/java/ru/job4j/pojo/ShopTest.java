@@ -32,5 +32,4 @@ public class ShopTest {
         int expected = -1;
         assertThat(rsl).isEqualTo(expected);
     }
-
 }
