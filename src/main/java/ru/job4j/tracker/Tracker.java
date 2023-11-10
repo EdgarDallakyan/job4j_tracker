@@ -20,11 +20,9 @@ public class Tracker {
     public Item[] findByName(String key) {
         Item[] result = new Item[size];
         int count = 0;
-        if (key != null) {
-            for (int i = 0; i < size; i++) {
-                if (items[i].getName().equals(key)) {
-                    result[count++] = items[i];
-                }
+        for (int i = 0; i < size; i++) {
+            if (items[i].getName().equals(key)) {
+                result[count++] = items[i];
             }
         }
         return Arrays.copyOf(result, count);
@@ -48,12 +46,13 @@ public class Tracker {
 
     public boolean replace(int id, Item item) {
         int index = indexOf(id);
-        if (index != -1) {
+        if (index == -1) {
+            return false;
+        } else {
             items[index].setId(id);
             items[index].setName(item.getName());
             return true;
         }
-        return false;
     }
 
     public boolean delete(int id) {
