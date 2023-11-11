@@ -18,4 +18,5 @@ public class Shop {
         int rsl = Shop.indexOfNull(products);
         System.out.println(rsl);
     }
+
 }
