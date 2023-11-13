@@ -9,8 +9,7 @@ public class College {
         student.setGroup(" № 3 ");
         student.setCreated(new Date());
 
-        System.out.println(student.getFio() + " from group " + student.getGroup()
-                + " entered: " + student.getCreated());
+        System.out.println(student.getFio() + " from group " + student.getGroup()  + " entered: " + student.getCreated());
     }
 }
 
