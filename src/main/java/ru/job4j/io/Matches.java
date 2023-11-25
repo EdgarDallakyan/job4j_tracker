@@ -16,9 +16,6 @@ public class Matches {
                 count -= matches;
                 System.out.println("Количество спичек: " + count);
                 turn = !turn;
-                if (count == 0) {
-                    break;
-                }
             } else {
                 System.out.println("Нужно ввести количество спичек от 1 до 3 и не более остатка: " + count);
             }
