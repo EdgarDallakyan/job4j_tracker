@@ -20,4 +20,5 @@ class BackArrayTest {
         String[] expected = {"Vasya", "Nik", "Andrey", "Ivan", "Petr"};
         assertThat(result).isEqualTo(expected);
     }
+
 }
