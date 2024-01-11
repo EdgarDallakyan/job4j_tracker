@@ -34,4 +34,5 @@ public class ConvertList2ArrayTest {
         };
         assertThat(result).isDeepEqualTo(expected);
     }
+
 }
