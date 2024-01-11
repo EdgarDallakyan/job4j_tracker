@@ -24,4 +24,5 @@ public class PriorityQueueTest {
         Task result = queue.take();
         assertThat(result.getDescription()).isEqualTo("low");
     }
+
 }
