@@ -1,7 +1,9 @@
 package ru.job4j.collection;
 
 import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.assertThat;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 
 public class StringCompareTest {
     @Test
@@ -52,5 +54,25 @@ public class StringCompareTest {
                 "Petrov"
         );
         assertThat(result).isLessThan(0);
+    }
+
+    @Test
+    public void thirdCharOfLeftLessThanRightShouldBeNegative() {
+        StringCompare compare = new StringCompare();
+        int result = compare.compare(
+                "Pekrov",
+                "Petrov"
+        );
+        assertThat(result).isLessThan(0);
+    }
+
+    @Test
+    public void thirdCharOfLeftGreaterThanRightShouldBePositive() {
+        StringCompare compare = new StringCompare();
+        int result = compare.compare(
+                "Petrov",
+                "Pekrov"
+        );
+        assertThat(result).isGreaterThan(0);
     }
 }
