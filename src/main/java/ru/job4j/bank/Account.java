@@ -2,8 +2,19 @@ package ru.job4j.bank;
 
 import java.util.Objects;
 
+/**
+ * Класс описывает модель банковского счёта
+ * @author Даллакян Эдгар
+ * @version 1.0
+ */
 public class Account {
+    /**
+     * Хранение реквизитов счета в переменной типа String
+     */
     private String requisite;
+    /**
+     * Хранение баланса счета в переменной типа double
+     */
     private double balance;
 
     public Account(String requisite, double balance) {
