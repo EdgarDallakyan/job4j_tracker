@@ -21,4 +21,5 @@ public class RefMethod {
             System.out.println(value);
         }
     }
+
 }
