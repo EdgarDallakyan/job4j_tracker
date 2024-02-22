@@ -44,4 +44,5 @@ class ProfilesTest {
         List<Address> expected = Arrays.asList(first, second, third);
         assertThat(result).isEqualTo(expected);
     }
+
 }
