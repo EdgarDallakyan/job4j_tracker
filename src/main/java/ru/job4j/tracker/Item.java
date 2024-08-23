@@ -4,12 +4,15 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Item {
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd-MMMM-EEEE-yyyy HH:mm:ss");
+
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
     private int id;
     private String name;
-    private LocalDateTime created = LocalDateTime.now();
 
-    public Item() { }
+    private LocalDateTime created = LocalDateTime.now().withNano(0);
+
+    public Item() {
+    }
 
     public Item(String name) {
         this.name = name;
@@ -20,8 +23,18 @@ public class Item {
         this.name = name;
     }
 
+    public Item(int id, String name, LocalDateTime date) {
+        this.id = id;
+        this.name = name;
+        this.created = date;
+    }
+
     public LocalDateTime getCreated() {
         return created;
+    }
+
+    public void setCreated(LocalDateTime date) {
+        this.created = date;
     }
 
     public int getId() {
