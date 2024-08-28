@@ -29,3 +29,4 @@ delete from items [42104-224]
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Таблица "DATABASECHANGELOGLOCK" не найдена
 Table "DATABASECHANGELOGLOCK" not found; SQL statement:
 SELECT COUNT(*) FROM DATABASECHANGELOGLOCK [42102-224]
+

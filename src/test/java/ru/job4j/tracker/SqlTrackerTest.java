@@ -5,6 +5,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ru.job4j.tracker.Item;
+import ru.job4j.tracker.SqlTracker;
 
 import java.io.InputStream;
 import java.sql.Connection;
@@ -23,7 +24,8 @@ public class SqlTrackerTest {
 
     @BeforeAll
     public static void initConnection() {
-        try (InputStream in = SqlTracker.class.getClassLoader().getResourceAsStream("db/liquibase_test.properties")) {
+        try (InputStream in = SqlTracker.class.getClassLoader().getResourceAsStream(
+                "db/liquibase_test.properties")) {
             Properties config = new Properties();
             config.load(in);
             Class.forName(config.getProperty("driver-class-name"));
@@ -77,6 +79,18 @@ public class SqlTrackerTest {
     }
 
     @Test
+    public void whenUseDeleteOneItem() {
+        SqlTracker tracker = new SqlTracker(connection);
+        Item item1 = new Item("item1");
+        Item item2 = new Item("item2");
+        tracker.add(item1);
+        tracker.add(item2);
+        tracker.delete(item1.getId());
+        List<Item> result = List.of(item2);
+        assertThat(result).isEqualTo(tracker.findAll());
+    }
+
+    @Test
     public void whenUseFindAll() {
         SqlTracker tracker = new SqlTracker(connection);
         Item item1 = new Item("item1");
@@ -105,5 +119,4 @@ public class SqlTrackerTest {
         tracker.add(item);
         assertThat(item).isEqualTo(tracker.findById(item.getId()));
     }
-
 }
