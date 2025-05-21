@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ru.job4j.tracker.Item;
 import ru.job4j.tracker.SqlTracker;
+import ru.job4j.tracker.action.*;
 
 import java.io.InputStream;
 import java.sql.Connection;
@@ -17,6 +18,9 @@ import java.util.List;
 import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class SqlTrackerTest {
 
@@ -118,5 +122,105 @@ public class SqlTrackerTest {
         Item item = new Item("item");
         tracker.add(item);
         assertThat(item).isEqualTo(tracker.findById(item.getId()));
+    }
+
+    @Test
+    public void whenItemWasReplacedSuccessfully() {
+        Output output = new StubOutput();
+        SqlTracker tracker = new SqlTracker(connection);
+        Item item = tracker.add(new Item("Replaced item"));
+        String replacedName = "New item name";
+        Replace replaceAction = new Replace(output);
+
+        Input input = mock(Input.class);
+
+        when(input.askInt(any(String.class))).thenReturn(item.getId());
+        when(input.askStr(any(String.class))).thenReturn(replacedName);
+
+        replaceAction.execute(input, tracker);
+
+        String ln = System.lineSeparator();
+        assertThat(output.toString()).isEqualTo(
+                "=== Редактирование заявки ===" + ln
+                        + "Заявка изменена успешно." + ln
+        );
+    }
+
+    @Test
+    public void whenItemWasCreatedSuccessfully() {
+        Output output = new StubOutput();
+        SqlTracker tracker = new SqlTracker(connection);
+        String itemName = "New item";
+        Create createAction = new Create(output);
+
+        Input input = mock(Input.class);
+
+        when(input.askStr(any(String.class))).thenReturn(itemName);
+
+        createAction.execute(input, tracker);
+
+        String ln = System.lineSeparator();
+        assertThat(output.toString()).isEqualTo(
+                "=== Создание новой заявки ===" + ln
+                        + "Добавленная заявка: " + tracker.findAll().get(0) + ln
+        );
+    }
+
+    @Test
+    public void whenItemWasDeletedSuccessfully() {
+        Output output = new StubOutput();
+        SqlTracker tracker = new SqlTracker(connection);
+        Item item = tracker.add(new Item("Item to delete"));
+        Delete deleteAction = new Delete(output);
+
+        Input input = mock(Input.class);
+        when(input.askInt(any(String.class))).thenReturn(item.getId());
+
+        deleteAction.execute(input, tracker);
+        String ln = System.lineSeparator();
+        assertThat(output.toString()).isEqualTo(
+                "=== Удаление заявки ===" + ln
+                        + "Заявка удалена успешно." + ln
+        );
+    }
+
+    @Test
+    public void whenItemWasFindByIdSuccessfully() {
+        Output output = new StubOutput();
+        SqlTracker tracker = new SqlTracker(connection);
+        Item item = tracker.add(new Item("New item"));
+        FindById findByIdAction = new FindById(output);
+
+        Input input = mock(Input.class);
+        when(input.askInt(any(String.class))).thenReturn(item.getId());
+        when(input.askStr(any(String.class))).thenReturn(item.getName());
+
+        findByIdAction.execute(input, tracker);
+
+        String ln = System.lineSeparator();
+        assertThat(output.toString()).isEqualTo(
+                "=== Вывод заявки по id ===" + ln
+                        + item + ln
+        );
+    }
+
+    @Test
+    public void whenItemWasFindByNameSuccessfully() {
+        Output output = new StubOutput();
+        SqlTracker tracker = new SqlTracker(connection);
+        Item item = tracker.add(new Item("New item"));
+        FindByName findByNameAction = new FindByName(output);
+
+        Input input = mock(Input.class);
+        when(input.askInt(any(String.class))).thenReturn(item.getId());
+        when(input.askStr(any(String.class))).thenReturn(item.getName());
+
+        findByNameAction.execute(input, tracker);
+
+        String ln = System.lineSeparator();
+        assertThat(output.toString()).isEqualTo(
+                "=== Вывод заявок по имени ===" + ln
+                        + item + ln
+        );
     }
 }
