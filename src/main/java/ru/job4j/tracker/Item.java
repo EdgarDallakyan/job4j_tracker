@@ -2,19 +2,26 @@ package ru.job4j.tracker;
 
 import lombok.Data;
 
-import java.sql.Timestamp;
+import javax.persistence.*;
 import java.time.LocalDateTime;
+
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
+@Entity
+@Table(name = "items")
 @Data
 public class Item {
 
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd-MMMM-EEEE-yyyy HH:mm:ss");
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
     private String name;
 
-    private LocalDateTime created = LocalDateTime.now().withNano(0);
+    private LocalDateTime created = LocalDateTime.now();
 
     public Item() {
     }
@@ -28,10 +35,10 @@ public class Item {
         this.name = name;
     }
 
-    public Item(int id, String name, LocalDateTime date) {
+    public Item(int id, String name, LocalDateTime created) {
         this.id = id;
         this.name = name;
-        this.created = date;
+        this.created = created;
     }
 
     @Override
@@ -52,13 +59,11 @@ public class Item {
             return false;
         }
         Item item = (Item) o;
-        return Objects.equals(name, item.name)
-                && (created.format(FORMATTER).equals(item.created.format(FORMATTER)));
+        return Objects.equals(name, item.name);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(name);
     }
-
 }
