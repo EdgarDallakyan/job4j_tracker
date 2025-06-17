@@ -8,6 +8,8 @@ import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class HbmTracker implements Store, AutoCloseable {
     private final StandardServiceRegistry registry = new StandardServiceRegistryBuilder()
@@ -17,85 +19,77 @@ public class HbmTracker implements Store, AutoCloseable {
 
     @Override
     public Item add(Item item) {
-        Transaction tx = null;
-        try (Session session = sf.openSession()) {
-            tx = session.beginTransaction();
-            session.persist(item);
-            tx.commit();
-            return item;
-        } catch (Exception e) {
-            if (tx != null) {
-                tx.rollback();
-            }
-            throw e;
-        }
+        transactionVoid(session -> session.save(item));
+        return item;
     }
 
     @Override
     public boolean replace(int id, Item item) {
-        Transaction tx = null;
-        try (Session session = sf.openSession()) {
-            tx = session.beginTransaction();
-            int updateCount = session.createMutationQuery("UPDATE Item SET name=:name, created=:created WHERE id=:id")
-                    .setParameter("name", item.getName())
-                    .setParameter("created", item.getCreated())
-                    .setParameter("id", id)
-                    .executeUpdate();
-            tx.commit();
-            return updateCount > 0;
-        } catch (Exception e) {
-            if (tx != null) {
-                tx.rollback();
-            }
-            throw e;
-        }
+        return transaction(session -> session.createQuery(
+                        "UPDATE Item SET name = :fName, created = :fCreated WHERE id = :fId")
+                .setParameter("fName", item.getName())
+                .setParameter("fCreated", item.getCreated())
+                .setParameter("fId", id)
+                .executeUpdate()) > 0;
     }
 
     @Override
     public void delete(int id) {
-        Transaction tx = null;
-        try (Session session = sf.openSession()) {
-            tx = session.beginTransaction();
-            session.createMutationQuery("DELETE Item WHERE id=:id")
-                    .setParameter("id", id)
-                    .executeUpdate();
-            tx.commit();
-        } catch (Exception e) {
-            if (tx != null) {
-                tx.rollback();
-            }
-            throw e;
-        }
+        transactionVoid(session -> session.createQuery(
+                        "DELETE Item WHERE id = :fId")
+                .setParameter("fId", id)
+                .executeUpdate());
     }
 
     @Override
     public List<Item> findAll() {
-        try (Session session = sf.openSession()) {
-            return session.createQuery("FROM Item", Item.class)
-                    .getResultList();
-        }
+        return transaction(session -> session.createQuery("FROM Item", Item.class).list());
     }
 
     @Override
     public List<Item> findByName(String key) {
-        try (Session session = sf.openSession()) {
-            return session.createQuery("FROM Item WHERE name=:name", Item.class)
-                    .setParameter("name", key)
-                    .getResultList();
-        }
+        return transaction(session -> session.createQuery("FROM Item i WHERE i.name = :fName", Item.class)
+                .setParameter("fName", key)
+                .list());
     }
 
     @Override
     public Item findById(int id) {
-        try (Session session = sf.openSession()) {
-            return session.createQuery("FROM Item WHERE id=:id", Item.class)
-                    .setParameter("id", id)
-                    .getSingleResultOrNull();
-        }
+        return transaction(session -> session.createQuery("FROM Item i WHERE i.id = :fId", Item.class)
+                .setParameter("fId", id)
+                .uniqueResult());
     }
 
     @Override
     public void close() {
         StandardServiceRegistryBuilder.destroy(registry);
+    }
+
+    private <T> T transaction(Function<Session, T> command) {
+        T result = null;
+        Transaction transaction = null;
+        try (Session session = sf.openSession()) {
+            transaction = session.beginTransaction();
+            result = command.apply(session);
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+        }
+        return result;
+    }
+
+    private void transactionVoid(Consumer<Session> command) {
+        Transaction transaction = null;
+        try (Session session = sf.openSession()) {
+            transaction = session.beginTransaction();
+            command.accept(session);
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+        }
     }
 }
